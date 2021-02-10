@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { HttpClient } from '@angular/common/http';
+import { rgb } from 'd3';
 
 @Component({
 	selector: 'app-map',
@@ -8,33 +9,43 @@ import { HttpClient } from '@angular/common/http';
 	styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
-	districtMap: any;
+	geoJsonDistrictMap: any;
 	svg: any;
-	mapContent: any;
-	mapContentParent: any;
+	path: any;
+	g: any;
 	projection: d3.GeoProjection;
 	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
-
-	// https://angularquestions.com/2020/10/12/d3-v6-zoom-and-drag-functionality/
-	// https://bl.ocks.org/mbostock/3680999
 
 	constructor(private httpClient: HttpClient) {}
 
 	ngOnInit(): void {
 		this.svg = d3.select('#map').attr('viewBox', '0 0 1000 500').attr('preserveAspectRatio', 'xMinYMin meet');
-		this.mapContent = d3.select('#map_content').selectAll('path').attr('transform', '');
-		this.mapContentParent = d3.select('#map_content');
+		this.path = d3.select('#map_content').selectAll('path');
+		this.g = d3.select('#map_content');
 		this.projection = d3.geoAlbersUsa();
 		this.geoGenerator = d3.geoPath().projection(this.projection);
 
-		this.httpClient.get('../../assets/data/counties.json').subscribe((json: any) => {
-			this.districtMap = json;
+		var colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
 
-			this.mapContent
-				.data(this.districtMap.features)
+		this.httpClient.get('../../assets/data/2019_county_election_map.json').subscribe((json: any) => {
+			this.geoJsonDistrictMap = json;
+
+			this.path
+				.data(this.geoJsonDistrictMap.features)
 				.enter()
 				.append('path')
-				.attr('d', this.geoGenerator as any);
+				.attr('d', this.geoGenerator as any)
+				.attr('fill', (d: any) => {
+					for (let candidate of d.properties['2016'].candidates) {
+						if (candidate.party == 'democrat') {
+							// console.log(d);
+							return colorScale(candidate.votes / d.properties['2012'].totalvotes);
+						}
+					}
+					// return rgb(100, 0, 0).formatHsl();
+				})
+				.style('stroke', '#0E0E0E')
+				.style('stroke-width', '0.1px');
 		});
 
 		this.svg
@@ -46,10 +57,9 @@ export class MapComponent implements OnInit {
 			.call(
 				d3
 					.zoom()
-					.scaleExtent([1, 8])
+					.scaleExtent([1, 11])
 					.on('zoom', (event) => {
-						console.log(event.transform);
-						this.mapContentParent.attr('transform', event.transform);
+						this.g.attr('transform', event.transform);
 					})
 			);
 	}
