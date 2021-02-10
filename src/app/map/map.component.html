@@ -1,3 +1,13 @@
+<div id="selections">
+	<mat-form-field appearance="fill">
+		<mat-label>Favorite food</mat-label>
+		<mat-select>
+		  <mat-option *ngFor="let yearOption of yearOptions[selectedOption.level]" [value]="food.value">
+			{{yearOption}
+		  </mat-option>
+		</mat-select>
+	  </mat-form-field>
+</div>
 <div class="border border-dark mt-5" overflow="initial">
 	<svg #map id="map">
 		<g id="map_content" />

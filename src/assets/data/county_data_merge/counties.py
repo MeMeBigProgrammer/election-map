@@ -21,6 +21,8 @@ with open('../2019_county_election_map.json') as f:
         county['properties']['2016'] = {'totalvotes': 0, 'candidates': []}
 
         for index, value in enumerate(csv_data):
+            if len(value[4]) == 4:
+                value[4] = "0" + value[4]
             if index != 0 and value[4] == shape_FIPS:
                 new_val = county['properties'][value[0]]
                 new_val['totalvotes'] = value[9]
@@ -35,5 +37,4 @@ with open('../2019_county_election_map.json') as f:
     final = data
 
 with open("./final.json", "w") as outfile:
-    print(type(final))
     json.dump(final, outfile)

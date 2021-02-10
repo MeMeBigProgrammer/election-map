@@ -16,6 +16,20 @@ export class MapComponent implements OnInit {
 	projection: d3.GeoProjection;
 	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
 
+	yearOptions = {
+		county: [
+			"2000",
+			"2004",
+			"2008",
+			"2012",
+			"2016"
+		]
+	}
+	selectedOption  = {
+		year: "2016",
+		level: "county"
+	}
+
 	constructor(private httpClient: HttpClient) {}
 
 	ngOnInit(): void {
@@ -36,13 +50,12 @@ export class MapComponent implements OnInit {
 				.append('path')
 				.attr('d', this.geoGenerator as any)
 				.attr('fill', (d: any) => {
-					for (let candidate of d.properties['2016'].candidates) {
+					for (let candidate of d.properties['2008'].candidates) {
 						if (candidate.party == 'democrat') {
-							// console.log(d);
-							return colorScale(candidate.votes / d.properties['2012'].totalvotes);
+							return colorScale(candidate.votes / (d.properties['2008'].totalvotes - 1) );
 						}
 					}
-					// return rgb(100, 0, 0).formatHsl();
+					return rgb(200, 200, 200).formatHsl();
 				})
 				.style('stroke', '#0E0E0E')
 				.style('stroke-width', '0.1px');
