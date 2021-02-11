@@ -32,7 +32,6 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/topojson-server/dist/topojson-server.min.js"
             ]
           },
           "configurations": {
