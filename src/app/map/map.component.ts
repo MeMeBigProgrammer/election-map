@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import * as d3 from 'd3';
 import { HttpClient } from '@angular/common/http';
+import * as d3 from 'd3';
 import { rgb } from 'd3';
 
 @Component({
@@ -10,25 +10,31 @@ import { rgb } from 'd3';
 })
 export class MapComponent implements OnInit {
 	geoJsonDistrictMap: any;
-	svg: any;
-	path: any;
+	svg: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
+	path: d3.Selection<d3.BaseType, unknown, d3.BaseType, unknown>;
 	g: any;
 	projection: d3.GeoProjection;
 	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
 
+	levelOptions = [
+		{ value: 'county', viewValue: 'County' },
+		{ value: 'state', viewValue: 'State' },
+	];
+
 	yearOptions = {
 		county: [
-			"2000",
-			"2004",
-			"2008",
-			"2012",
-			"2016"
-		]
-	}
-	selectedOption  = {
-		year: "2016",
-		level: "county"
-	}
+			{ value: '2016', viewValue: '2016' },
+			{ value: '2012', viewValue: '2012' },
+			{ value: '2008', viewValue: '2008' },
+			{ value: '2004', viewValue: '2004' },
+			{ value: '2000', viewValue: '2000' },
+		],
+	};
+
+	selectedOption = {
+		year: '2016',
+		level: 'county',
+	};
 
 	constructor(private httpClient: HttpClient) {}
 
@@ -50,9 +56,9 @@ export class MapComponent implements OnInit {
 				.append('path')
 				.attr('d', this.geoGenerator as any)
 				.attr('fill', (d: any) => {
-					for (let candidate of d.properties['2008'].candidates) {
+					for (let candidate of d.properties[this.selectedOption.year].candidates) {
 						if (candidate.party == 'democrat') {
-							return colorScale(candidate.votes / (d.properties['2008'].totalvotes - 1) );
+							return colorScale(candidate.votes / (d.properties[this.selectedOption.year].totalvotes - 1));
 						}
 					}
 					return rgb(200, 200, 200).formatHsl();
@@ -61,19 +67,32 @@ export class MapComponent implements OnInit {
 				.style('stroke-width', '0.1px');
 		});
 
-		this.svg
-			.append('rect')
-			.attr('fill', 'none')
-			.attr('pointer-events', 'all')
-			.attr('width', 1000)
-			.attr('height', 500)
-			.call(
-				d3
-					.zoom()
-					.scaleExtent([1, 11])
-					.on('zoom', (event) => {
-						this.g.attr('transform', event.transform);
-					})
-			);
+		// this.svg
+		// 	.append('rect')
+		// 	.attr('fill', 'none')
+		// 	.attr('pointer-events', 'all')
+		// 	.attr('width', 1000)
+		// 	.attr('height', 500)
+		// 	.call(
+		// 		d3
+		// 			.zoom()
+		// 			.scaleExtent([1, 11])
+		// 			.on('zoom', (event) => {
+		// 				this.g.attr('transform', event.transform);
+		// 			})
+		// 	);
+	}
+
+	refreshMap() {
+		d3.select('#map_content').selectAll('path').exit().remove();
+	}
+
+	updateYear(event: any) {
+		// console.log(this.selectedOption.year);
+		this.refreshMap();
+	}
+	updateLevel(event: any) {
+		// console.log(event);
+		this.refreshMap();
 	}
 }
