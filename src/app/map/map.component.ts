@@ -13,7 +13,7 @@ export class MapComponent implements OnInit {
 	geoJsonDistrictMap: any;
 	svg: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
 	path: d3.Selection<d3.BaseType, unknown, d3.BaseType, unknown>;
-	g: any;
+	g: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
 	projection: d3.GeoProjection;
 	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
 
@@ -49,7 +49,6 @@ export class MapComponent implements OnInit {
 		this.geoGenerator = d3.geoPath().projection(this.projection);
 
 		this.httpClient.get('../../assets/data/county_data_merge/topoout.json').subscribe((json: any) => {
-			// src/assets/data/county_data_merge/final.json ../../assets/data/2019_county_election_map_topo.json
 			this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
 
 			this.path
@@ -58,7 +57,7 @@ export class MapComponent implements OnInit {
 				.append('path')
 				.attr('d', this.geoGenerator as any)
 				.attr('id', (d: any) => {
-					return 'F' + d.properties.AFFGEOID;
+					return 'F' + d.properties.AFFGEOID; // IDs need to start with a letter.
 				})
 				.attr('fill', (d: any) => {
 					for (let candidate of d.properties[this.selectedOption.year].candidates) {
@@ -68,8 +67,8 @@ export class MapComponent implements OnInit {
 					}
 					return rgb(200, 200, 200).formatHsl();
 				})
-				.style('stroke', '#0E0E0E')
-				.style('stroke-width', '0.1px');
+				.style('stroke', '#010101')
+				.style('stroke-width', '0.15px');
 		});
 
 		this.svg
@@ -105,7 +104,6 @@ export class MapComponent implements OnInit {
 		this.refreshMap();
 	}
 	updateLevel(event: any) {
-		// console.log(event);
 		this.refreshMap();
 	}
 }
