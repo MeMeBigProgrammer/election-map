@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
-import * as topojsonClient from "topojson-client";
+import * as topojsonClient from 'topojson-client';
 
 @Component({
 	selector: 'app-map',
@@ -48,11 +48,9 @@ export class MapComponent implements OnInit {
 		this.projection = d3.geoAlbersUsa();
 		this.geoGenerator = d3.geoPath().projection(this.projection);
 
-		
-
-		this.httpClient.get('../../assets/data/topo.json').subscribe((json: any) => {
-
-			this.geoJsonDistrictMap = topojsonClient.features(json, json.objects.counties);
+		this.httpClient.get('../../assets/data/county_data_merge/topoout.json').subscribe((json: any) => {
+			// src/assets/data/county_data_merge/final.json ../../assets/data/2019_county_election_map_topo.json
+			this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
 
 			this.path
 				.data(this.geoJsonDistrictMap.features)
@@ -60,7 +58,7 @@ export class MapComponent implements OnInit {
 				.append('path')
 				.attr('d', this.geoGenerator as any)
 				.attr('id', (d: any) => {
-					return "F" + d.properties.AFFGEOID
+					return 'F' + d.properties.AFFGEOID;
 				})
 				.attr('fill', (d: any) => {
 					for (let candidate of d.properties[this.selectedOption.year].candidates) {
@@ -99,7 +97,7 @@ export class MapComponent implements OnInit {
 					}
 				}
 				return rgb(200, 200, 200).formatHsl();
-			})
+			});
 		});
 	}
 

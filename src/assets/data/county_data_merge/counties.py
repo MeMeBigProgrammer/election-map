@@ -10,7 +10,7 @@ with open('./MIT_Election_Data_2000_2016.csv', 'r') as csv_file:
     for index, value in enumerate(csv_reader):
         csv_data.append(value)
 
-with open('../2019_county_election_map.json') as f:
+with open('../shapefiles/output.json') as f:
     data = json.load(f)
     for i, county in enumerate(data['features']):
         shape_FIPS = county['properties']['GEOID']
