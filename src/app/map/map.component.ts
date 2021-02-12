@@ -42,34 +42,42 @@ export class MapComponent implements OnInit {
 	constructor(private httpClient: HttpClient) {}
 
 	ngOnInit(): void {
-		this.svg = d3.select('#map').attr('viewBox', '0 0 1000 500').attr('preserveAspectRatio', 'xMinYMin meet');
+		this.svg = d3
+			.select('#map')
+			.attr('viewBox', '0 0 1000 500')
+			.attr('preserveAspectRatio', 'xMinYMin meet');
 		this.path = d3.select('#map_content').selectAll('path');
 		this.g = d3.select('#map_content');
 		this.projection = d3.geoAlbersUsa();
 		this.geoGenerator = d3.geoPath().projection(this.projection);
 
-		this.httpClient.get('../../assets/data/county_data_merge/topoout.json').subscribe((json: any) => {
-			this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
+		this.httpClient
+			.get('../../assets/data/2019_county_election_map_topo.json')
+			.subscribe((json: any) => {
+				this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
 
-			this.path
-				.data(this.geoJsonDistrictMap.features)
-				.enter()
-				.append('path')
-				.attr('d', this.geoGenerator as any)
-				.attr('id', (d: any) => {
-					return 'F' + d.properties.AFFGEOID; // IDs need to start with a letter.
-				})
-				.attr('fill', (d: any) => {
-					for (let candidate of d.properties[this.selectedOption.year].candidates) {
-						if (candidate.party == 'democrat') {
-							return this.colorScale(candidate.votes / (d.properties[this.selectedOption.year].totalvotes - 1));
+				this.path
+					.data(this.geoJsonDistrictMap.features)
+					.enter()
+					.append('path')
+					.attr('d', this.geoGenerator as any)
+					.attr('id', (d: any) => {
+						return 'F' + d.properties.AFFGEOID; // IDs need to start with a letter.
+					})
+					.attr('fill', (d: any) => {
+						for (let candidate of d.properties[this.selectedOption.year].candidates) {
+							if (candidate.party == 'democrat') {
+								return this.colorScale(
+									candidate.votes /
+										(d.properties[this.selectedOption.year].totalvotes - 1)
+								);
+							}
 						}
-					}
-					return rgb(200, 200, 200).formatHsl();
-				})
-				.style('stroke', '#010101')
-				.style('stroke-width', '0.15px');
-		});
+						return rgb(200, 200, 200).formatHsl();
+					})
+					.style('stroke', '#010101')
+					.style('stroke-width', '0.15px');
+			});
 
 		this.svg
 			.append('rect')
@@ -92,7 +100,10 @@ export class MapComponent implements OnInit {
 			d3.select('#F' + d.properties.AFFGEOID).attr('fill', (d: any) => {
 				for (let candidate of d.properties[this.selectedOption.year].candidates) {
 					if (candidate.party == 'democrat') {
-						return this.colorScale(candidate.votes / (d.properties[this.selectedOption.year].totalvotes - 1));
+						return this.colorScale(
+							candidate.votes /
+								(d.properties[this.selectedOption.year].totalvotes - 1)
+						);
 					}
 				}
 				return rgb(200, 200, 200).formatHsl();
