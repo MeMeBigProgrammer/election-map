@@ -39,6 +39,16 @@ export class MapComponent implements OnInit {
 		level: 'county',
 	};
 
+	tooltipConfig = {
+		text: 'Hello There!',
+		isVisible: false,
+		css: {
+			position: 'absolute',
+		},
+		node: {},
+		election: {},
+	};
+
 	constructor(private httpClient: HttpClient) {}
 
 	ngOnInit(): void {
@@ -70,7 +80,12 @@ export class MapComponent implements OnInit {
 					.attr('stroke-linejoin', 'round')
 					.attr('pointer-events', 'all')
 					.on('click', (event, d: any) => {
-						console.log(d.properties.AFFGEOID);
+						this.tooltipConfig.text = d.properties.AFFGEOID;
+						this.tooltipConfig.css['top'] = event.pageY + 'px';
+						this.tooltipConfig.css['left'] = event.pageX + 'px';
+						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
+						this.tooltipConfig.node = d;
+						this.tooltipConfig.election = d.properties[this.selectedOption.year];
 					});
 			});
 
@@ -80,6 +95,7 @@ export class MapComponent implements OnInit {
 				.scaleExtent([1, 11])
 				.on('zoom', (event) => {
 					this.g.attr('transform', event.transform);
+					this.tooltipConfig.isVisible = false;
 					// d3.selectAll('path').attr('stroke-width', 0.5 / event.transform.k); // Very computationally heavy
 				})
 		);

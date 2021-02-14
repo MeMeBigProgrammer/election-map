@@ -1,20 +1,40 @@
 <div class="d-flex justify-content-between">
 	<mat-form-field appearance="fill" class="ml-sm-5 pl-sm-5">
 		<mat-label>Year</mat-label>
-		<mat-select [(value)]="selectedOption.year" (selectionChange)="updateYear($event)" disableRipple>
-			<mat-option *ngFor="let yearOption of yearOptions[selectedOption.level]" [value]="yearOption.value">
+		<mat-select
+			[(value)]="selectedOption.year"
+			(selectionChange)="updateYear($event)"
+			disableRipple
+		>
+			<mat-option
+				*ngFor="let yearOption of yearOptions[selectedOption.level]"
+				[value]="yearOption.value"
+			>
 				{{ yearOption.viewValue }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>
 	<mat-form-field appearance="fill" class="mr-sm-5 pr-sm-5">
 		<mat-label>Level</mat-label>
-		<mat-select [(value)]="selectedOption.level" (selectionChange)="updateLevel($event)" [disabled]="true" disableRipple>
+		<mat-select
+			[(value)]="selectedOption.level"
+			(selectionChange)="updateLevel($event)"
+			[disabled]="true"
+			disableRipple
+		>
 			<mat-option *ngFor="let levelOption of levelOptions" [value]="levelOption.value">
 				{{ levelOption.viewValue }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>
+</div>
+<div *ngIf="tooltipConfig.isVisible" [ngStyle]="tooltipConfig.css">
+	<app-results-tooltip
+		[text]="tooltipConfig.text"
+		[node]="tooltipConfig.node"
+		[election]="tooltipConfig.election"
+	>
+	</app-results-tooltip>
 </div>
 <div class="border border-dark mt-5" overflow="initial">
 	<svg #map id="map">

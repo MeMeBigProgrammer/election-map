@@ -1,0 +1,23 @@
+<div class="rounded-sm" id="tooltip">
+	<h4 class="text-center table-sm mx-4 mt-2">{{ node.properties.NAME }}</h4>
+	<table class="table">
+		<thead>
+			<tr class="t-row">
+				<th scope="col" class="py-1">Name</th>
+				<th scope="col" class="pl-1 py-1">Party</th>
+				<th scope="col" class="pl-1 py-1">Votes</th>
+				<th scope="col" class="pl-1 py-1">%</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let candidate of election.candidates" class="t-row">
+				<th class="py-1">{{ candidate.name }}</th>
+				<td class="pl-1 py-1">{{ candidate.party | titlecase }}</td>
+				<td class="pl-1 py-1">{{ candidate.votes | number: '1.0-0' }}</td>
+				<td class="pl-1 py-1">
+					{{ (candidate.votes / election.totalvotes) * 100 | number: '1.2-2' }}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
