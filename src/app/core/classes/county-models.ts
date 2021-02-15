@@ -1,7 +1,7 @@
 export interface Candidate {
 	name: string;
 	votes: number;
-	party: string;
+	party: string; // TODO compress party names to save ~.4 MB, unpack here; Delete unused properties from data
 }
 
 export interface Election {
