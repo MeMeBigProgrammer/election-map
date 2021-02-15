@@ -1,4 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {
+	CountyNode,
+	CountyNodeProperties,
+	Candidate,
+	Election,
+} from '../core/classes/county-models';
 
 @Component({
 	selector: 'app-results-tooltip',
@@ -8,13 +14,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ResultsTooltipComponent implements OnInit {
 	constructor() {}
 
-	@Input() text: string;
+	@Input() node: CountyNode;
 
-	@Input() node: any;
+	@Input() election: Election;
 
-	@Input() election: any;
-
-	ngOnInit(): void {
-		console.log(this.election);
-	}
+	ngOnInit(): void {}
 }

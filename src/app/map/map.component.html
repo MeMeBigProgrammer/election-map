@@ -29,11 +29,7 @@
 	</mat-form-field>
 </div>
 <div *ngIf="tooltipConfig.isVisible" [ngStyle]="tooltipConfig.css">
-	<app-results-tooltip
-		[text]="tooltipConfig.text"
-		[node]="tooltipConfig.node"
-		[election]="tooltipConfig.election"
-	>
+	<app-results-tooltip [node]="tooltipConfig.node" [election]="tooltipConfig.election">
 	</app-results-tooltip>
 </div>
 <div class="border border-dark mt-5" overflow="initial">

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
 import * as topojsonClient from 'topojson-client';
+import { CountyNode, CountyNodeProperties, Candidate } from '../core/classes/county-models';
 
 @Component({
 	selector: 'app-map',
@@ -40,7 +41,6 @@ export class MapComponent implements OnInit {
 	};
 
 	tooltipConfig = {
-		text: 'Hello There!',
 		isVisible: false,
 		css: {
 			position: 'absolute',
@@ -60,7 +60,8 @@ export class MapComponent implements OnInit {
 		this.g = d3.select('#map_content');
 
 		this.httpClient
-			.get('../../assets/data/2019_county_election_map_topo.json')
+			// .get('../../assets/data/2019_county_election_map_topo.json')
+			.get('../../assets/data/county_data_merge/topoout.json')
 			.subscribe((json: any) => {
 				this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
 
@@ -68,24 +69,27 @@ export class MapComponent implements OnInit {
 					.data(this.geoJsonDistrictMap.features)
 					.enter()
 					.append('path')
-					.attr('d', this.geoGenerator as any)
-					.attr('id', (d: any) => {
-						return 'F' + d.properties.AFFGEOID; // IDs need to start with a letter.
+					.attr('d', this.geoGenerator)
+					.attr('id', (d: CountyNode) => {
+						return 'F' + d.properties.affGeoId; // IDs need to start with a letter.
 					})
-					.attr('fill', (d: any) => {
+					.attr('fill', (d: CountyNode) => {
 						return this.calculateColor(d);
 					})
 					.style('stroke', '#010101')
 					.attr('stroke-width', '0.2px')
 					.attr('stroke-linejoin', 'round')
 					.attr('pointer-events', 'all')
-					.on('click', (event, d: any) => {
-						this.tooltipConfig.text = d.properties.AFFGEOID;
+					.on('click', (event, d: CountyNode) => {
 						this.tooltipConfig.css['top'] = event.pageY + 'px';
 						this.tooltipConfig.css['left'] = event.pageX + 'px';
 						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
-						this.tooltipConfig.node = d;
+						this.tooltipConfig.node = new CountyNode(d);
 						this.tooltipConfig.election = d.properties[this.selectedOption.year];
+					})
+					.on('mouseover', (event) => {
+						this.tooltipConfig.css['top'] = event.pageY + 'px';
+						this.tooltipConfig.css['left'] = event.pageX + 'px';
 					});
 			});
 
@@ -102,14 +106,14 @@ export class MapComponent implements OnInit {
 	}
 
 	refreshMap() {
-		this.geoJsonDistrictMap.features.forEach((d: any) => {
-			d3.select('#F' + d.properties.AFFGEOID).attr('fill', (d: any) => {
+		this.geoJsonDistrictMap.features.forEach((d: CountyNode) => {
+			d3.select('#F' + d.properties.affGeoId).attr('fill', (d: CountyNode) => {
 				return this.calculateColor(d);
 			});
 		});
 	}
 
-	calculateColor(data: any) {
+	calculateColor(data: CountyNode) {
 		const colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
 		for (let candidate of data.properties[this.selectedOption.year].candidates) {
 			if (candidate.party == 'democrat') {
