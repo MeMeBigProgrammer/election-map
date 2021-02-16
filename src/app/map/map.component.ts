@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
 import * as topojsonClient from 'topojson-client';
+import { CountyNode, CountyNodeProperties, Candidate } from '../core/classes/county-models';
 
 @Component({
 	selector: 'app-map',
@@ -14,8 +15,10 @@ export class MapComponent implements OnInit {
 	svg: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
 	path: d3.Selection<d3.BaseType, unknown, d3.BaseType, unknown>;
 	g: d3.Selection<d3.BaseType, unknown, HTMLElement, any>;
-	projection: d3.GeoProjection;
-	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects>;
+	projection: d3.GeoProjection = d3.geoAlbersUsa();
+	geoGenerator: d3.GeoPath<any, d3.GeoPermissibleObjects> = d3
+		.geoPath()
+		.projection(this.projection);
 
 	levelOptions = [
 		{ value: 'county', viewValue: 'County' },
@@ -37,7 +40,13 @@ export class MapComponent implements OnInit {
 		level: 'county',
 	};
 
-	colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
+	tooltipConfig = {
+		css: {
+			position: 'absolute',
+		},
+		isVisible: false,
+		node: {},
+	};
 
 	constructor(private httpClient: HttpClient) {}
 
@@ -48,8 +57,6 @@ export class MapComponent implements OnInit {
 			.attr('preserveAspectRatio', 'xMinYMin meet');
 		this.path = d3.select('#map_content').selectAll('path');
 		this.g = d3.select('#map_content');
-		this.projection = d3.geoAlbersUsa();
-		this.geoGenerator = d3.geoPath().projection(this.projection);
 
 		this.httpClient
 			.get('../../assets/data/2019_county_election_map_topo.json')
@@ -60,60 +67,68 @@ export class MapComponent implements OnInit {
 					.data(this.geoJsonDistrictMap.features)
 					.enter()
 					.append('path')
-					.attr('d', this.geoGenerator as any)
-					.attr('id', (d: any) => {
-						return 'F' + d.properties.AFFGEOID; // IDs need to start with a letter.
+					.attr('d', this.geoGenerator)
+					.attr('id', (d: CountyNode) => {
+						return 'F' + d.properties.affGeoId; // IDs need to start with a letter.
 					})
-					.attr('fill', (d: any) => {
-						for (let candidate of d.properties[this.selectedOption.year].candidates) {
-							if (candidate.party == 'democrat') {
-								return this.colorScale(
-									candidate.votes /
-										(d.properties[this.selectedOption.year].totalvotes - 1)
-								);
-							}
-						}
-						return rgb(200, 200, 200).formatHsl();
+					.attr('fill', (d: CountyNode) => {
+						return this.calculateColor(d);
 					})
 					.style('stroke', '#010101')
-					.style('stroke-width', '0.15px');
+					.attr('stroke-width', '0.2px')
+					.attr('stroke-linejoin', 'round')
+					.attr('pointer-events', 'all')
+					.on('click', (event, d: CountyNode) => {
+						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
+						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
+						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
+						this.tooltipConfig.node = new CountyNode(d);
+					})
+					.on('mouseover', (event, d: CountyNode) => {
+						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
+						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
+						this.tooltipConfig.node = new CountyNode(d);
+					});
 			});
 
-		this.svg
-			.append('rect')
-			.attr('fill', 'none')
-			.attr('pointer-events', 'all')
-			.attr('width', 1000)
-			.attr('height', 500)
-			.call(
-				d3
-					.zoom()
-					.scaleExtent([1, 11])
-					.on('zoom', (event) => {
-						this.g.attr('transform', event.transform);
-					})
-			);
+		this.svg.call(
+			d3
+				.zoom()
+				.scaleExtent([1, 11])
+				.on('zoom', (event) => {
+					this.g.attr('transform', event.transform);
+					this.tooltipConfig.isVisible = false;
+					// d3.selectAll('path').attr('stroke-width', 0.5 / event.transform.k); // Very computationally heavy
+				})
+		);
 	}
 
 	refreshMap() {
-		this.geoJsonDistrictMap.features.forEach((d: any) => {
-			d3.select('#F' + d.properties.AFFGEOID).attr('fill', (d: any) => {
-				for (let candidate of d.properties[this.selectedOption.year].candidates) {
-					if (candidate.party == 'democrat') {
-						return this.colorScale(
-							candidate.votes /
-								(d.properties[this.selectedOption.year].totalvotes - 1)
-						);
-					}
-				}
-				return rgb(200, 200, 200).formatHsl();
+		this.geoJsonDistrictMap.features.forEach((d: CountyNode) => {
+			d3.select('#F' + d.properties.affGeoId).attr('fill', (d: CountyNode) => {
+				return this.calculateColor(d);
 			});
 		});
+	}
+
+	calculateColor(data: CountyNode) {
+		const colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
+		data = new CountyNode(data);
+		for (let candidate of data.properties.results.get(this.selectedOption.year).candidates) {
+			if (candidate.party == 'democrat') {
+				return colorScale(
+					candidate.votes /
+						(data.properties.results.get(this.selectedOption.year).totalvotes - 1)
+				);
+			}
+		}
+		return rgb(200, 200, 200).formatHsl();
 	}
 
 	updateYear(event: any) {
 		this.refreshMap();
 	}
+
 	updateLevel(event: any) {
 		this.refreshMap();
 	}

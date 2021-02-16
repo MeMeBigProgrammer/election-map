@@ -7,9 +7,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
+import { ResultsTooltipComponent } from './results-tooltip/results-tooltip.component';
 
 @NgModule({
-	declarations: [AppComponent, MapComponent],
+	declarations: [AppComponent, MapComponent, ResultsTooltipComponent],
 	imports: [
 		BrowserModule,
 		AppRoutingModule,
