@@ -1,20 +1,17 @@
 export interface Candidate {
 	name: string;
 	votes: number;
-	party: string; // TODO compress party names to save ~.4 MB, unpack here; Delete unused properties from data
+	party: string; // TODO compress party names to save ~.4 MB, unpack here; Delete unused properties from data; try smaller shapefile
 }
 
 export interface Election {
-	candidates: Election;
-	totalVotes: number;
+	candidates: Candidate[];
+	totalvotes: number;
 }
 
 export class CountyNodeProperties {
-	'2000': Election;
-	'2004': Election;
-	'2008': Election;
-	'2012': Election;
-	'2016': Election;
+	static validYears = ['2016', '2012', '2008', '2004', '2000'];
+	results: Map<string, Election> = new Map<string, Election>();
 	affGeoId: string;
 	aland: Number;
 	awater: Number;
@@ -26,11 +23,10 @@ export class CountyNodeProperties {
 	StateFipsCode: string;
 
 	constructor(d: any) {
-		this['2000'] = d['2000'] as Election;
-		this['2004'] = d['2004'] as Election;
-		this['2008'] = d['2008'] as Election;
-		this['2012'] = d['2012'] as Election;
-		this['2016'] = d['2016'] as Election;
+		for (let year of CountyNodeProperties.validYears) {
+			this.results.set(year, d[year] as Election);
+		}
+
 		this.affGeoId = d.AFFGEOID ?? '';
 		this.aland = d.ALAND ?? 0;
 		this.awater = d.AWATER ?? 0;
@@ -40,9 +36,21 @@ export class CountyNodeProperties {
 		this.lsad = d.LSAD ?? '';
 		this.name = d.NAME ?? '';
 		this.StateFipsCode = d.STATEFP ?? '';
+		this.sortElections();
 	}
 
-	sortElections() {} // TODO, allows to remove a @Input
+	sortElections() {
+		for (let year of CountyNodeProperties.validYears) {
+			this.results.get(year).candidates.sort((left: Candidate, right: Candidate) => {
+				left.votes = Number(left.votes);
+				right.votes = Number(right.votes);
+				if (right.votes == left.votes) {
+					return 0;
+				}
+				return Number(left.votes) < Number(right.votes) ? 1 : -1;
+			});
+		}
+	}
 }
 
 export class CountyNode {

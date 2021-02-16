@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import {
 	CountyNode,
 	CountyNodeProperties,
@@ -11,12 +11,20 @@ import {
 	templateUrl: './results-tooltip.component.html',
 	styleUrls: ['./results-tooltip.component.scss'],
 })
-export class ResultsTooltipComponent implements OnInit {
+export class ResultsTooltipComponent implements OnInit, OnChanges {
 	constructor() {}
 
 	@Input() node: CountyNode;
 
-	@Input() election: Election;
+	@Input() year: string;
 
-	ngOnInit(): void {}
+	election: Election;
+
+	ngOnInit(): void {
+		this.election = this.node.properties.results.get(this.year);
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		this.ngOnInit();
+	}
 }

@@ -41,12 +41,11 @@ export class MapComponent implements OnInit {
 	};
 
 	tooltipConfig = {
-		isVisible: false,
 		css: {
 			position: 'absolute',
 		},
+		isVisible: false,
 		node: {},
-		election: {},
 	};
 
 	constructor(private httpClient: HttpClient) {}
@@ -60,8 +59,7 @@ export class MapComponent implements OnInit {
 		this.g = d3.select('#map_content');
 
 		this.httpClient
-			// .get('../../assets/data/2019_county_election_map_topo.json')
-			.get('../../assets/data/county_data_merge/topoout.json')
+			.get('../../assets/data/2019_county_election_map_topo.json')
 			.subscribe((json: any) => {
 				this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
 
@@ -81,15 +79,15 @@ export class MapComponent implements OnInit {
 					.attr('stroke-linejoin', 'round')
 					.attr('pointer-events', 'all')
 					.on('click', (event, d: CountyNode) => {
-						this.tooltipConfig.css['top'] = event.pageY + 'px';
-						this.tooltipConfig.css['left'] = event.pageX + 'px';
+						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
+						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
 						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
 						this.tooltipConfig.node = new CountyNode(d);
-						this.tooltipConfig.election = d.properties[this.selectedOption.year];
 					})
-					.on('mouseover', (event) => {
-						this.tooltipConfig.css['top'] = event.pageY + 'px';
-						this.tooltipConfig.css['left'] = event.pageX + 'px';
+					.on('mouseover', (event, d: CountyNode) => {
+						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
+						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
+						this.tooltipConfig.node = new CountyNode(d);
 					});
 			});
 
@@ -115,10 +113,12 @@ export class MapComponent implements OnInit {
 
 	calculateColor(data: CountyNode) {
 		const colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
-		for (let candidate of data.properties[this.selectedOption.year].candidates) {
+		data = new CountyNode(data);
+		for (let candidate of data.properties.results.get(this.selectedOption.year).candidates) {
 			if (candidate.party == 'democrat') {
 				return colorScale(
-					candidate.votes / (data.properties[this.selectedOption.year].totalvotes - 1)
+					candidate.votes /
+						(data.properties.results.get(this.selectedOption.year).totalvotes - 1)
 				);
 			}
 		}
