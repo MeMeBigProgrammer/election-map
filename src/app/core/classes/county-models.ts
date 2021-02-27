@@ -26,6 +26,13 @@ export class CountyNodeProperties {
 				candidates: [],
 				totalVotes: 0,
 			};
+			for (let index = 0; index < election.candidates.length; index++) {
+				if (election.candidates[index].party == 'rep') {
+					election.candidates[index].party = 'republican';
+				} else if (election.candidates[index].party == 'dem') {
+					election.candidates[index].party = 'democrat';
+				}
+			}
 			this.results.set(year, election);
 		}
 
