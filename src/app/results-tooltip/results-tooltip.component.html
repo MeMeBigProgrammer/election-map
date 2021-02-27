@@ -15,7 +15,7 @@
 				<td class="pl-1 py-1">{{ candidate.party | titlecase }}</td>
 				<td class="pl-1 py-1">{{ candidate.votes | number: '1.0-0' }}</td>
 				<td class="pl-1 py-1">
-					{{ (candidate.votes / election.totalvotes) * 100 | number: '1.2-2' }}
+					{{ (candidate.votes / election.totalVotes) * 100 | number: '1.2-2' }}
 				</td>
 			</tr>
 		</tbody>
