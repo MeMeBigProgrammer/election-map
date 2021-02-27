@@ -1,7 +1,7 @@
 export interface Candidate {
 	name: string;
 	votes: number;
-	party: string; // TODO compress party names to save ~.4 MB, unpack here; Delete unused properties from data; try smaller shapefile
+	party: string;
 }
 
 export interface Election {
@@ -13,8 +13,8 @@ export class CountyNodeProperties {
 	static validYears = ['2016', '2012', '2008', '2004', '2000'];
 	results: Map<string, Election> = new Map<string, Election>();
 	affGeoId: string;
-	aland: Number;
-	awater: Number;
+	aland: Number; // TODO remove in python
+	awater: Number; // TODO remove in python
 	countyFipsCode: string;
 	countyNS: string;
 	GeoId: string;
@@ -24,7 +24,11 @@ export class CountyNodeProperties {
 
 	constructor(d: any) {
 		for (let year of CountyNodeProperties.validYears) {
-			this.results.set(year, d[year] as Election);
+			let election = (d[year] as Election) ?? {
+				candidates: [],
+				totalvotes: 0,
+			};
+			this.results.set(year, election);
 		}
 
 		this.affGeoId = d.AFFGEOID ?? '';
@@ -62,5 +66,16 @@ export class CountyNode {
 		this.type = d.type ?? '';
 		this.properties = new CountyNodeProperties(d.properties);
 		this.geometry = d.geometry;
+	}
+}
+
+export class CountyGeoJson {
+	features: CountyNode[] = [];
+	type: string;
+	constructor(json: any) {
+		this.type = json.type ?? '';
+		json.features.forEach((node: any) => {
+			this.features.push(new CountyNode(node));
+		});
 	}
 }
