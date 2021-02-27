@@ -6,15 +6,13 @@ export interface Candidate {
 
 export interface Election {
 	candidates: Candidate[];
-	totalvotes: number;
+	totalVotes: number;
 }
 
 export class CountyNodeProperties {
 	static validYears = ['2016', '2012', '2008', '2004', '2000'];
 	results: Map<string, Election> = new Map<string, Election>();
 	affGeoId: string;
-	aland: Number; // TODO remove in python
-	awater: Number; // TODO remove in python
 	countyFipsCode: string;
 	countyNS: string;
 	GeoId: string;
@@ -26,14 +24,19 @@ export class CountyNodeProperties {
 		for (let year of CountyNodeProperties.validYears) {
 			let election = (d[year] as Election) ?? {
 				candidates: [],
-				totalvotes: 0,
+				totalVotes: 0,
 			};
+			for (let index = 0; index < election.candidates.length; index++) {
+				if (election.candidates[index].party == 'rep') {
+					election.candidates[index].party = 'republican';
+				} else if (election.candidates[index].party == 'dem') {
+					election.candidates[index].party = 'democrat';
+				}
+			}
 			this.results.set(year, election);
 		}
 
 		this.affGeoId = d.AFFGEOID ?? '';
-		this.aland = d.ALAND ?? 0;
-		this.awater = d.AWATER ?? 0;
 		this.countyFipsCode = d.COUNTYFP ?? '';
 		this.countyNS = d.COUNTYNS ?? '';
 		this.GeoId = d.GEOID ?? '';

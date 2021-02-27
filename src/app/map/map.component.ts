@@ -64,7 +64,6 @@ export class MapComponent implements OnInit {
 				this.geoJsonDistrictMap = new CountyGeoJson(
 					topojsonClient.feature(json, json.objects.counties)
 				);
-				console.log(this.geoJsonDistrictMap);
 
 				this.path
 					.data(this.geoJsonDistrictMap.features)
@@ -119,7 +118,7 @@ export class MapComponent implements OnInit {
 		let results = data.properties.results.get(this.selectedOption.year);
 		for (let candidate of results.candidates) {
 			if (candidate.party == 'democrat') {
-				return colorScale(candidate.votes / (results.totalvotes - 1));
+				return colorScale(candidate.votes / (results.totalVotes - 1));
 			}
 		}
 		return rgb(200, 200, 200).formatHsl();
