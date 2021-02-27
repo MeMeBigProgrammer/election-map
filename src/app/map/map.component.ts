@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
 import * as topojsonClient from 'topojson-client';
-import { CountyNode, CountyNodeProperties, Candidate } from '../core/classes/county-models';
+import { CountyNode, CountyGeoJson } from '../core/classes/county-models';
 
 @Component({
 	selector: 'app-map',
@@ -61,7 +61,10 @@ export class MapComponent implements OnInit {
 		this.httpClient
 			.get('../../assets/data/2019_county_election_map_topo.json')
 			.subscribe((json: any) => {
-				this.geoJsonDistrictMap = topojsonClient.feature(json, json.objects.counties);
+				this.geoJsonDistrictMap = new CountyGeoJson(
+					topojsonClient.feature(json, json.objects.counties)
+				);
+				console.log(this.geoJsonDistrictMap);
 
 				this.path
 					.data(this.geoJsonDistrictMap.features)
@@ -82,12 +85,12 @@ export class MapComponent implements OnInit {
 						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
 						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
 						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
-						this.tooltipConfig.node = new CountyNode(d);
+						this.tooltipConfig.node = d;
 					})
 					.on('mouseover', (event, d: CountyNode) => {
 						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
-						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
-						this.tooltipConfig.node = new CountyNode(d);
+						this.tooltipConfig.css['left'] = event.pageX - 150 + 'px';
+						this.tooltipConfig.node = d;
 					});
 			});
 
@@ -113,13 +116,10 @@ export class MapComponent implements OnInit {
 
 	calculateColor(data: CountyNode) {
 		const colorScale = d3.scaleSequential(d3['interpolateRdBu']).domain([0, 1]);
-		data = new CountyNode(data);
-		for (let candidate of data.properties.results.get(this.selectedOption.year).candidates) {
+		let results = data.properties.results.get(this.selectedOption.year);
+		for (let candidate of results.candidates) {
 			if (candidate.party == 'democrat') {
-				return colorScale(
-					candidate.votes /
-						(data.properties.results.get(this.selectedOption.year).totalvotes - 1)
-				);
+				return colorScale(candidate.votes / (results.totalvotes - 1));
 			}
 		}
 		return rgb(200, 200, 200).formatHsl();
