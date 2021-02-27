@@ -64,7 +64,6 @@ export class MapComponent implements OnInit {
 				this.geoJsonDistrictMap = new CountyGeoJson(
 					topojsonClient.feature(json, json.objects.counties)
 				);
-				console.log(this.geoJsonDistrictMap);
 
 				this.path
 					.data(this.geoJsonDistrictMap.features)
