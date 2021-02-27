@@ -20,8 +20,8 @@ with open('../shapefiles/output.json') as f:
         county['properties']['2012'] = {'totalVotes': 0, 'candidates': []}
         county['properties']['2016'] = {'totalVotes': 0, 'candidates': []}
 
-        del county['properties']['awater']
-        del county['properties']['aland']
+        del county['properties']['ALAND']
+        del county['properties']['AWATER']
 
         for index, value in enumerate(csv_data):
             if len(value[4]) == 4:
