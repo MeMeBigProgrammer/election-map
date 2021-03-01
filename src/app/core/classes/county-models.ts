@@ -16,7 +16,7 @@ export class CountyNodeProperties {
 	countyFipsCode: string;
 	countyNS: string;
 	GeoId: string;
-	lsad: string;
+	// lsad: string;
 	name: string;
 	StateFipsCode: string;
 
@@ -40,7 +40,7 @@ export class CountyNodeProperties {
 		this.countyFipsCode = d.COUNTYFP ?? '';
 		this.countyNS = d.COUNTYNS ?? '';
 		this.GeoId = d.GEOID ?? '';
-		this.lsad = d.LSAD ?? '';
+		// this.lsad = d.LSAD ?? '';
 		this.name = d.NAME ?? '';
 		this.StateFipsCode = d.STATEFP ?? '';
 		this.sortElections();
