@@ -33,14 +33,14 @@ export class CountyNodeProperties {
 	}
 
 	sortElections() {
-		CountyNodeProperties.validYears.forEach((year) => {
+		for (let year in this.results) {
 			this.results.get(year).candidates.sort((left: Candidate, right: Candidate) => {
 				if (right.votes == left.votes) {
 					return 0;
 				}
 				return Number(left.votes) < Number(right.votes) ? 1 : -1;
 			});
-		});
+		}
 	}
 }
 

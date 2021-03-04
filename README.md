@@ -2,7 +2,7 @@
 
 I got bored so I created an election results map using d3.js and angular.
 
-You can find the live version [here]().
+~~You can find the live version [here]()~~. Live version not ready.
 
 # Helpful Links
 - https://angularquestions.com/2020/10/12/d3-v6-zoom-and-drag-functionality/
