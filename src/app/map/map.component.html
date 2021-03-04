@@ -8,9 +8,9 @@
 		>
 			<mat-option
 				*ngFor="let yearOption of yearOptions[selectedOption.level]"
-				[value]="yearOption.value"
+				[value]="yearOption"
 			>
-				{{ yearOption.viewValue }}
+				{{ yearOption }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>

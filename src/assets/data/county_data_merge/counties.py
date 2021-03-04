@@ -37,6 +37,7 @@ for i, county in enumerate(data['features']):
     del county['properties']['ALAND']
     del county['properties']['AWATER']
     del county['properties']['LSAD']
+    del county['properties']['COUNTYNS']
 
     for index, value in enumerate(csv_data):
         if len(value[4]) == 4:

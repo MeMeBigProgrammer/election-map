@@ -1,10 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import {
-	CountyNode,
-	CountyNodeProperties,
-	Candidate,
-	Election,
-} from '../core/classes/county-models';
+import { CountyNode, Election } from '../core/classes';
 
 @Component({
 	selector: 'app-results-tooltip',

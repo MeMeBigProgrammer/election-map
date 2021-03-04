@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
 import * as topojsonClient from 'topojson-client';
-import { CountyNode, CountyGeoJson } from '../core/classes/county-models';
+import { CountyNode, CountyGeoJson } from '../core/classes/';
 
 @Component({
 	selector: 'app-map',
@@ -26,13 +26,7 @@ export class MapComponent implements OnInit {
 	];
 
 	yearOptions = {
-		county: [
-			{ value: '2016', viewValue: '2016' },
-			{ value: '2012', viewValue: '2012' },
-			{ value: '2008', viewValue: '2008' },
-			{ value: '2004', viewValue: '2004' },
-			{ value: '2000', viewValue: '2000' },
-		],
+		county: ['2016', '2012', '2008', '2004', '2000'],
 	};
 
 	selectedOption = {

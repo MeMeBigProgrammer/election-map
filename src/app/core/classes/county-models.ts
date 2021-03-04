@@ -1,31 +1,18 @@
-export interface Candidate {
-	name: string;
-	votes: number;
-	party: string;
-}
-
-export interface Election {
-	candidates: Candidate[];
-	totalVotes: number;
-}
+import { Election, Candidate } from './election';
 
 export class CountyNodeProperties {
 	static validYears = ['2016', '2012', '2008', '2004', '2000'];
 	results: Map<string, Election> = new Map<string, Election>();
 	affGeoId: string;
 	countyFipsCode: string;
-	countyNS: string;
 	GeoId: string;
-	// lsad: string;
 	name: string;
 	StateFipsCode: string;
 
-	constructor(d: any) {
+	constructor(object: any) {
 		for (let year of CountyNodeProperties.validYears) {
-			let election = (d[year] as Election) ?? {
-				candidates: [],
-				totalVotes: 0,
-			};
+			let election = new Election(object[year]);
+
 			for (let index = 0; index < election.candidates.length; index++) {
 				if (election.candidates[index].party == 'rep') {
 					election.candidates[index].party = 'republican';
@@ -36,21 +23,17 @@ export class CountyNodeProperties {
 			this.results.set(year, election);
 		}
 
-		this.affGeoId = d.AFFGEOID ?? '';
-		this.countyFipsCode = d.COUNTYFP ?? '';
-		this.countyNS = d.COUNTYNS ?? '';
-		this.GeoId = d.GEOID ?? '';
-		// this.lsad = d.LSAD ?? '';
-		this.name = d.NAME ?? '';
-		this.StateFipsCode = d.STATEFP ?? '';
+		this.affGeoId = object.AFFGEOID ?? '';
+		this.countyFipsCode = object.COUNTYFP ?? '';
+		this.GeoId = object.GEOID ?? '';
+		this.name = object.NAME ?? '';
+		this.StateFipsCode = object.STATEFP ?? '';
 		this.sortElections();
 	}
 
 	sortElections() {
 		for (let year of CountyNodeProperties.validYears) {
 			this.results.get(year).candidates.sort((left: Candidate, right: Candidate) => {
-				left.votes = Number(left.votes);
-				right.votes = Number(right.votes);
 				if (right.votes == left.votes) {
 					return 0;
 				}
