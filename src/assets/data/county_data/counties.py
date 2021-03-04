@@ -22,7 +22,7 @@ with open('./MIT_Election_Data_2000_2016.csv', 'r') as csv_file:
     for index, value in enumerate(csv_reader):
         csv_data.append(value)
 
-with open('../shapefiles/output.json') as f:
+with open('../county_shapefiles/output.json') as f:
     data = json.load(f)
 
 
