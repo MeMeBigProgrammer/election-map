@@ -13,13 +13,14 @@ export class CountyNodeProperties {
 		for (let year of CountyNodeProperties.validYears) {
 			let election = new Election(object[year]);
 
-			for (let index = 0; index < election.candidates.length; index++) {
-				if (election.candidates[index].party == 'rep') {
+			election.candidates.forEach((candidate, index) => {
+				if (candidate.party == 'rep') {
 					election.candidates[index].party = 'republican';
-				} else if (election.candidates[index].party == 'dem') {
+				} else if (candidate.party == 'dem') {
 					election.candidates[index].party = 'democrat';
 				}
-			}
+			});
+
 			this.results.set(year, election);
 		}
 
@@ -32,14 +33,14 @@ export class CountyNodeProperties {
 	}
 
 	sortElections() {
-		for (let year of CountyNodeProperties.validYears) {
+		CountyNodeProperties.validYears.forEach((year) => {
 			this.results.get(year).candidates.sort((left: Candidate, right: Candidate) => {
 				if (right.votes == left.votes) {
 					return 0;
 				}
 				return Number(left.votes) < Number(right.votes) ? 1 : -1;
 			});
-		}
+		});
 	}
 }
 
@@ -60,8 +61,6 @@ export class CountyGeoJson {
 	type: string;
 	constructor(json: any) {
 		this.type = json.type ?? '';
-		json.features.forEach((node: any) => {
-			this.features.push(new CountyNode(node));
-		});
+		json.features.forEach((node: any) => this.features.push(new CountyNode(node)));
 	}
 }

@@ -22,8 +22,8 @@
 			[disabled]="true"
 			disableRipple
 		>
-			<mat-option *ngFor="let levelOption of levelOptions" [value]="levelOption.value">
-				{{ levelOption.viewValue }}
+			<mat-option *ngFor="let levelOption of levelOptions" [value]="levelOption">
+				{{ levelOption | titlecase }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>

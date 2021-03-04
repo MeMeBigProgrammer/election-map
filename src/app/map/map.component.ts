@@ -20,10 +20,7 @@ export class MapComponent implements OnInit {
 		.geoPath()
 		.projection(this.projection);
 
-	levelOptions = [
-		{ value: 'county', viewValue: 'County' },
-		{ value: 'state', viewValue: 'State' },
-	];
+	levelOptions = ['county', 'state'];
 
 	yearOptions = {
 		county: ['2016', '2012', '2008', '2004', '2000'],
@@ -65,18 +62,17 @@ export class MapComponent implements OnInit {
 					.append('path')
 					.attr('d', this.geoGenerator)
 					.attr('id', (d: CountyNode) => {
-						return 'F' + d.properties.affGeoId; // IDs need to start with a letter.
+						// IDs need to start with a letter.
+						return 'F' + d.properties.affGeoId;
 					})
-					.attr('fill', (d: CountyNode) => {
-						return this.calculateColor(d);
-					})
+					.attr('fill', (d: CountyNode) => this.calculateColor(d))
 					.style('stroke', '#010101')
 					.attr('stroke-width', '0.2px')
 					.attr('stroke-linejoin', 'round')
 					.attr('pointer-events', 'all')
 					.on('click', (event, d: CountyNode) => {
 						this.tooltipConfig.css['top'] = event.pageY + 50 + 'px';
-						this.tooltipConfig.css['left'] = event.pageX - 25 + 'px';
+						this.tooltipConfig.css['left'] = event.pageX - 150 + 'px';
 						this.tooltipConfig.isVisible = !this.tooltipConfig.isVisible;
 						this.tooltipConfig.node = d;
 					})
@@ -92,8 +88,8 @@ export class MapComponent implements OnInit {
 				.zoom()
 				.scaleExtent([1, 11])
 				.on('zoom', (event) => {
-					this.g.attr('transform', event.transform);
 					this.tooltipConfig.isVisible = false;
+					this.g.attr('transform', event.transform);
 					// d3.selectAll('path').attr('stroke-width', 0.5 / event.transform.k); // Very computationally heavy
 				})
 		);
@@ -101,9 +97,9 @@ export class MapComponent implements OnInit {
 
 	refreshMap() {
 		this.geoJsonDistrictMap.features.forEach((d: CountyNode) => {
-			d3.select('#F' + d.properties.affGeoId).attr('fill', (d: CountyNode) => {
-				return this.calculateColor(d);
-			});
+			d3.select('#F' + d.properties.affGeoId).attr('fill', (d: CountyNode) =>
+				this.calculateColor(d)
+			);
 		});
 	}
 
