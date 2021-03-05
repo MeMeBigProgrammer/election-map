@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import { rgb } from 'd3';
 import * as topojsonClient from 'topojson-client';
-import { CountyNode, CountyGeoJson } from '../core/classes/';
+import { CountyNode, CountyGeoJson } from '../common/classes';
 
 @Component({
 	selector: 'app-map',

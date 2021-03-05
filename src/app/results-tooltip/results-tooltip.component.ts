@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { CountyNode, Election } from '../core/classes';
+import { CountyNode, Election } from '../common/classes';
 
 @Component({
 	selector: 'app-results-tooltip',
